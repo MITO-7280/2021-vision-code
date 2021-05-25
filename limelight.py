@@ -107,7 +107,7 @@ while True:
     tsg = table.getNumber('ts',None)
     print(NetworkTables.isConnected())
     print([txg,tyg,tag,tsg])
-    if txg==0 and tyg==0 and tag==0 and tsg==0:
+    if txg==None or tyg==None or tag==None or tsg==None:
         table_c.putNumber('d_adjustment', None)
         table_c.putNumber('a_adjustment', None)
         table_c.putNumber('toss_adjustment', None)
