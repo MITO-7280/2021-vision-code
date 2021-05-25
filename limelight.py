@@ -16,25 +16,25 @@ from networktables import NetworkTablesInstance
 import math
 import logging
 import re
+from symph import *
 
 logging.basicConfig(level = logging.DEBUG)
 
 NetworkTables.initialize(server='roborio-7280-frc.local')
 table=NetworkTables.getTable("limelight")
-table_c=NetworkTables.getTable("SmartDashboard")
+table_c=NetworkTables.getTable("vision")
 
 cam_url='http://10.72.80.11:5800'
 ha=2.320
 hc=0.70859
 radius=0.31439
-ac=table_c.getNumber("cameraAngle")
+ac=table_c.getNumber("shooterAngle")
 aconst=0
 Kp=1
 thresh=0
 kpd=1
 desired_distance=1
-#vi=table_c.getNumber("initialSpeed")
-
+isNeeded=table_c.getNumber("isNeeded")
 
 #instance=NetworkTablesInstance.getDefault()
 
@@ -80,6 +80,7 @@ def ranging(table,ac,ha,hc,kpd,desired_distance,radius):
     d_adjustment=kpd*distance_error
     return d_adjustment
 
+
 '''
 def tossing(distance,ha):
     # if you want to use parabola
@@ -95,7 +96,7 @@ def tossing(distance,ha):
 '''
 
 capture = cv2.VideoCapture(cam_url)
-while True:
+while isNeeded==1.0:
     ret,cap=capture.read()
     cv2.imshow('limelight',cap)
 
@@ -115,9 +116,9 @@ while True:
         table_c.putNumber('a_adjustment', None)
         table_c.putNumber('toss_adjustment', None)
     else:
-        distance=distance_estimation(radius,ac, ha, hc, table)
         d_adjustment=ranging(table,ac,ha,hc,kpd,desired_distance,radius)
         a_adjustment=Aiming(table,aconst,Kp,thresh)
+        distance=distance_estimation(radius,ac, ha, hc, table)
         toss_adjustment=tyg
         print('distance:', distance_estimation(radius,ac, ha, hc, table))
         print('ranging:', ranging(table,ac,ha,hc,kpd,desired_distance,radius))
@@ -131,7 +132,6 @@ while True:
 capture.release()
 
 cv2.destroyAllWindows()
-
 
 
 
