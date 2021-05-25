@@ -108,7 +108,9 @@ while True:
     print(NetworkTables.isConnected())
     print([txg,tyg,tag,tsg])
     if txg==0 and tyg==0 and tag==0 and tsg==0:
-        pass
+        table_c.putNumber('d_adjustment', None)
+        table_c.putNumber('a_adjustment', None)
+        table_c.putNumber('toss_adjustment', None)
     else:
         d_adjustment=ranging(table,ac,ha,hc,kpd,desired_distance,radius)
         a_adjustment=Aiming(table,aconst,Kp,thresh)
@@ -116,9 +118,9 @@ while True:
         print('distance:', distance_estimation(radius,ac, ha, hc, table))
         print('ranging:', ranging(table,ac,ha,hc,kpd,desired_distance,radius))
         print('Aiming:', Aiming(table,aconst,Kp,thresh))
-        table_c.putNumber(d_adjustment,d_adjustment)
-        table_c.putNumber(a_adjustment,a_adjustment)
-        table_c.putNumber(toss_adjustment,toss_adjustment)
+        table_c.putNumber('d_adjustment',d_adjustment)
+        table_c.putNumber('a_adjustment',a_adjustment)
+        table_c.putNumber('toss_adjustment',toss_adjustment)
 
     if cv2.waitKey(1)==27:
         break
