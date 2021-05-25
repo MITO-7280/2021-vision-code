@@ -47,7 +47,7 @@ def distance_estimation(radius,ac,ha,hc,table):
     :return: distance
     '''
     ty = float(table.getNumber('ty',0))
-    distance=(ha-hc*(1+radius*sin(ac)))/math.tan(-ty*2*math.pi/360+ac)
+    distance=(ha-hc*(1+radius*math.sin(ac)))/math.tan(-ty*2*math.pi/360+ac)
     return distance
 
 def Aiming(table,aconst,Kp,thresh):
