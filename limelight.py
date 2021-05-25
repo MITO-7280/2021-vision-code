@@ -33,7 +33,7 @@ Kp=1
 thresh=0
 kpd=1
 desired_distance=1
-vi=table_c.getNumber("initialSpeed")
+#vi=table_c.getNumber("initialSpeed")
 
 
 #instance=NetworkTablesInstance.getDefault()
@@ -80,16 +80,19 @@ def ranging(table,ac,ha,hc,kpd,desired_distance,radius):
     d_adjustment=kpd*distance_error
     return d_adjustment
 
+'''
 def tossing(distance,ha):
+    # if you want to use parabola
     angle, t = symbols('angle t')
     f1 = vi * cos(angle) * t - distance
     f2 = vi * sin(angle) * t - g * t * t / 2 + ha
     result = nonlinsolve([f1, f2], [angle, t])
     result = re.search('2\*_n\*pi \+ \d\.\d*', str(result)).group()
     result = re.split('[+]', result)
-    toss_adjustment = float(result[1]) * 360 / (2 * math.pi)
+    toss_adjustment = float(result[1]) * 360 / (2 * math.pi) 
     print(toss_adjustment)
     return toss_adjustment
+'''
 
 capture = cv2.VideoCapture(cam_url)
 while True:
@@ -114,7 +117,7 @@ while True:
     else:
         d_adjustment=ranging(table,ac,ha,hc,kpd,desired_distance,radius)
         a_adjustment=Aiming(table,aconst,Kp,thresh)
-        toss_adjustment=tossing(distance_estimation(radius,ac, ha, hc, table),ha)
+        toss_adjustment=tyg
         print('distance:', distance_estimation(radius,ac, ha, hc, table))
         print('ranging:', ranging(table,ac,ha,hc,kpd,desired_distance,radius))
         print('Aiming:', Aiming(table,aconst,Kp,thresh))
