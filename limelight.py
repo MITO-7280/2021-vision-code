@@ -95,44 +95,43 @@ def tossing(distance,ha):
     return toss_adjustment
 '''
 
-capture = cv2.VideoCapture(cam_url)
-while isNeeded==1.0:
-    ret,cap=capture.read()
-    cv2.imshow('limelight',cap)
+while True:
+    capture = cv2.VideoCapture(cam_url)
+    ret, cap = capture.read()
+    cv2.imshow('limelight', cap)
+    if isNeeded==1.0:
 
-    #table.putNumber('tx', tx.getDouble(0))
-    #table.putNumber('ty', ty.getDouble(0))
-    #table.putNumber('ta', ta.getDouble(0))
-    #table.putNumber('ts', ts.getDouble(0))
-    #print([tx,ty,ta,ts])
-    txg = table.getNumber('tx',None)
-    tyg = table.getNumber('ty',None)
-    tag = table.getNumber('ta',None)
-    tsg = table.getNumber('ts',None)
-    print(NetworkTables.isConnected())
-    print([txg,tyg,tag,tsg])
-    if txg==None or tyg==None or tag==None or tsg==None:
-        table_c.putNumber('d_adjustment', None)
-        table_c.putNumber('a_adjustment', None)
-        table_c.putNumber('toss_adjustment', None)
-    else:
-        d_adjustment=ranging(table,ac,ha,hc,kpd,desired_distance,radius)
-        a_adjustment=Aiming(table,aconst,Kp,thresh)
-        distance=distance_estimation(radius,ac, ha, hc, table)
-        toss_adjustment=tyg
-        print('distance:', distance_estimation(radius,ac, ha, hc, table))
-        print('ranging:', ranging(table,ac,ha,hc,kpd,desired_distance,radius))
-        print('Aiming:', Aiming(table,aconst,Kp,thresh))
-        table_c.putNumber('distance',distance)
-        table_c.putNumber('a_adjustment',a_adjustment)
-        table_c.putNumber('toss_adjustment',toss_adjustment)
+        #table.putNumber('tx', tx.getDouble(0))
+        #table.putNumber('ty', ty.getDouble(0))
+        #table.putNumber('ta', ta.getDouble(0))
+        #table.putNumber('ts', ts.getDouble(0))
+        #print([tx,ty,ta,ts])
+        txg = table.getNumber('tx',None)
+        tyg = table.getNumber('ty',None)
+        tag = table.getNumber('ta',None)
+        tsg = table.getNumber('ts',None)
+        print(NetworkTables.isConnected())
+        print([txg,tyg,tag,tsg])
+        if txg==None or tyg==None or tag==None or tsg==None:
+            table_c.putNumber('d_adjustment', 2)
+            table_c.putNumber('a_adjustment', 2)
+            table_c.putNumber('toss_adjustment', 2)
+        else:
+            d_adjustment=ranging(table,ac,ha,hc,kpd,desired_distance,radius)
+            a_adjustment=Aiming(table,aconst,Kp,thresh)
+            distance=distance_estimation(radius,ac, ha, hc, table)
+            toss_adjustment=tyg
+            print('distance:', distance_estimation(radius,ac, ha, hc, table))
+            print('ranging:', ranging(table,ac,ha,hc,kpd,desired_distance,radius))
+            print('Aiming:', Aiming(table,aconst,Kp,thresh))
+            table_c.putNumber('distance',distance)
+            table_c.putNumber('a_adjustment',a_adjustment)
+            table_c.putNumber('toss_adjustment',toss_adjustment)
 
     if cv2.waitKey(1)==27:
-        break
+            break
 capture.release()
 
 cv2.destroyAllWindows()
-
-
 
 
