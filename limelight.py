@@ -16,27 +16,31 @@ from networktables import NetworkTablesInstance
 import math
 import logging
 import re
-from symph import *
 
 logging.basicConfig(level = logging.DEBUG)
+instance = NetworkTablesInstance.getDefault()
 
 NetworkTables.initialize(server='roborio-7280-frc.local')
 table=NetworkTables.getTable("limelight")
-table_c=NetworkTables.getTable("vision")
+
+#instance.initialize(server='')
+table_c=instance.getTable("vision")
+print(NetworkTables.isConnected())
 
 cam_url='http://10.72.80.11:5800'
-ha=2.320
+ha=2.32
 hc=0.70859
 radius=0.31439
-ac=table_c.getNumber("shooterAngle")
+ac=table_c.getNumber("shooterAngle",0.0)
 aconst=0
 Kp=1
 thresh=0
 kpd=1
 desired_distance=1
-isNeeded=table_c.getNumber("isNeeded")
 
-#instance=NetworkTablesInstance.getDefault()
+
+
+
 
 def distance_estimation(radius,ac,ha,hc,table):
     '''
@@ -46,8 +50,8 @@ def distance_estimation(radius,ac,ha,hc,table):
     :param table: networktable
     :return: distance
     '''
-    ty = float(table.getNumber('ty',0))
-    distance=(ha-hc*(1+radius*math.sin(ac)))/math.tan(-ty*2*math.pi/360+ac)
+    ty = float(table.getNumber('ty',0.0))
+    distance=(ha-hc*(1+radius*math.sin(ac)))/math.tan(-ty*2*math.pi/360+(90-ac)*2*math.pi/360)
     return distance
 
 def Aiming(table,aconst,Kp,thresh):
@@ -96,11 +100,12 @@ def tossing(distance,ha):
 '''
 
 while True:
+    isNeeded=table_c.getNumber('isNeeded',2.0)
+    print("isNeeded:",isNeeded)
     capture = cv2.VideoCapture(cam_url)
     ret, cap = capture.read()
     cv2.imshow('limelight', cap)
     if isNeeded==1.0:
-
         #table.putNumber('tx', tx.getDouble(0))
         #table.putNumber('ty', ty.getDouble(0))
         #table.putNumber('ta', ta.getDouble(0))
@@ -113,17 +118,23 @@ while True:
         print(NetworkTables.isConnected())
         print([txg,tyg,tag,tsg])
         if txg==None or tyg==None or tag==None or tsg==None:
-            table_c.putNumber('d_adjustment', 2)
-            table_c.putNumber('a_adjustment', 2)
-            table_c.putNumber('toss_adjustment', 2)
+            table_c.putNumber('d_adjustment', 0.0)
+            table_c.putNumber('a_adjustment', 0.0)
+            table_c.putNumber('toss_adjustment', 0.0)
+        elif txg==0 and tyg==0 and tag==0 and tsg==0:
+            table_c.putNumber('d_adjustment', 0.0)
+            table_c.putNumber('a_adjustment', 0.0)
+            table_c.putNumber('toss_adjustment', 0.0)
         else:
+            ac = table_c.getNumber("shooterAngle", 0.0)
+            print('ac:',ac)
             d_adjustment=ranging(table,ac,ha,hc,kpd,desired_distance,radius)
             a_adjustment=Aiming(table,aconst,Kp,thresh)
             distance=distance_estimation(radius,ac, ha, hc, table)
             toss_adjustment=tyg
-            print('distance:', distance_estimation(radius,ac, ha, hc, table))
-            print('ranging:', ranging(table,ac,ha,hc,kpd,desired_distance,radius))
-            print('Aiming:', Aiming(table,aconst,Kp,thresh))
+            print('distance:', distance)
+            print('a_adjustment',a_adjustment)
+            print('toss_adjustment',toss_adjustment)
             table_c.putNumber('distance',distance)
             table_c.putNumber('a_adjustment',a_adjustment)
             table_c.putNumber('toss_adjustment',toss_adjustment)
@@ -133,5 +144,10 @@ while True:
 capture.release()
 
 cv2.destroyAllWindows()
+
+
+
+
+
 
 
